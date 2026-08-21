@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Multitask Rhythm">
+<meta name="theme-color" content="#0f1923">
+<title>Multitask Rhythm & Brain Walk</title>
+
+<!-- PWA Manifest & Icons Integration -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0f1923; --bg2: #162030; --bg3: #1e2d40; --bg4: #253344;
+  --accent: #00e5a0; --accent2: #7c6af7; --warn: #ff6b6b; --gold: #ffc947; --rose: #f97fae;
+  --text: #e8f4f0; --text2: #7a9bb0; --text3: #4a6a80;
+  --r: 16px; --safe-top: env(safe-area-inset-top); --safe-bot: env(safe-area-inset-bottom);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Kanit', sans-serif; overflow: hidden; }
+
+body {
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  padding-top: var(--safe-top); padding-bottom: var(--safe-bot);
+}
+
+/* ── OVERLAY SETUP ── */
+#overlay, #win-overlay {
+  position: fixed; inset: 0; z-index: 200; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: max(40px, calc(var(--safe-top) + 20px)) 24px max(24px, var(--safe-bot));
+  overflow-y: auto; gap: 12px;
+}
+.ov-icon { font-size: 56px; line-height: 1; }
+.ov-title { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; }
+.ov-line { width: 48px; height: 3px; background: var(--accent); border-radius: 2px; }
+.ov-desc { font-size: 13px; color: var(--text2); text-align: center; max-width: 320px; line-height: 1.5; }
+
+.ov-settings { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.ov-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg3); border-radius: 12px; }
+.ov-row label { font-size: 13px; color: var(--text2); }
+.ov-row select, .ov-row input[type="number"] {
+  background: var(--bg4); border: 1px solid rgba(255,255,255,0.1); color: var(--text);
+  border-radius: 8px; padding: 4px 8px; font-size: 13px; font-family: 'Kanit', sans-serif; outline: none; text-align: center;
+}
+
+.btn-big {
+  width: 100%; max-width: 320px; padding: 16px; border-radius: var(--r);
+  background: var(--accent); color: #0a1410; font-family: 'Kanit', sans-serif;
+  font-size: 18px; font-weight: 700; border: none; cursor: pointer; transition: transform .1s; margin-top: 10px;
+}
+.btn-big:active { transform: scale(0.97); }
+
+/* ── HEADER STATS ── */
+#hdr {
+  width: 100%; max-width: 420px; display: flex; align-items: center; padding: 10px 16px;
+  gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
+}
+.hd-stat { flex: 1; text-align: center; }
+.hd-val { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; line-height: 1; }
+.hd-lbl { font-size: 9px; color: var(--text3); letter-spacing: 0.5px; margin-top: 3px; }
+.hd-sep { width: 1px; height: 28px; background: rgba(255,255,255,0.07); }
+#btn-menu {
+  width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg3); color: var(--text2); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── MAIN CONTENT AREA ── */
+#game-layout {
+  flex: 1; width: 100%; max-width: 420px; display: flex; flex-direction: column;
+  justify-content: space-between; align-items: center; padding: 8px 12px; gap: 8px; min-height: 0;
+}
+
+/* Question Card */
+#q-card {
+  width: 100%; background: var(--bg2); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r); padding: 10px 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+  position: relative; overflow: hidden;
+}
+#q-timer-bar {
+  position: absolute; top: 0; left: 0; height: 3px; background: var(--accent); width: 100%; transition: width 0.1s linear;
+}
+#q-badge { font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+#q-text { font-size: 15px; font-weight: 500; color: var(--text); min-height: 46px; display: flex; align-items: center; justify-content: center; white-space: pre-line; }
+#q-text.revealed { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+#ans-row { display: flex; gap: 6px; width: 100%; max-width: 280px; }
+#ans-input {
+  flex: 1; background: var(--bg3); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  color: #fff; font-family: 'Space Mono', monospace; font-size: 16px; text-align: center; outline: none;
+}
+.btn-sm { padding: 6px 14px; border-radius: 8px; background: var(--accent); color: #0a1410; font-weight: 700; border: none; cursor: pointer; }
+.btn-voice { flex: 1; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 12px; border: none; cursor: pointer; }
+
+/* Canvas Game */
+#canvas-wrap { flex: 1; width: 100%; display: flex; justify-content: center; align-items: center; min-height: 0; }
+canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r); touch-action: none; }
+
+/* Controls */
+#controls { width: 100%; display: flex; gap: 10px; }
+.btn-tap {
+  flex: 1; padding: 14px; border-radius: var(--r); border: none; color: #fff;
+  font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity .1s;
+}
+#btn-left { background: #2980b9; }
+#btn-right { background: #8e44ad; }
+.btn-tap:active { opacity: 0.8; }
+
+#fb-bar { font-size: 12px; font-weight: 600; min-height: 18px; color: var(--text2); text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ── START OVERLAY ── -->
+<div id="overlay">
+  <div class="ov-icon">🧠⚡</div>
+  <div class="ov-title">Multitask Rhythm</div>
+  <div class="ov-line"></div>
+  <div class="ov-desc">Tap left/right along the path strictly on beat while solving cognitive math & memory challenges!</div>
+
+  <div class="ov-settings">
+    <div class="ov-row">
+      <label>Rhythm Pattern Mode</label>
+      <select id="pattern-sel">
+        <option value="fixed" selected>Fixed (จังหวะคงที่)</option>
+        <option value="random">Random (จังหวะสุ่ม)</option>
+      </select>
+    </div>
+    <div class="ov-row">
+      <label>Base Rhythm Speed</label>
+      <select id="bpm-sel">
+        <option value="1200">Slow (1.2s)</option>
+        <option value="1000" selected>Normal (1.0s)</option>
+        <option value="800">Fast (0.8s)</option>
+      </select>
+    </div>
+    <div class="ov-row">
+      <label>Response Window</label>
+      <select id="window-sel">
+        <option value="1200">1.2 sec</option>
+        <option value="1000" selected>1.0 sec</option>
+        <option value="800">0.8 sec</option>
+        <option value="600">0.6 sec</option>
+      </select>
+    </div>
+    <div class="ov-row">
+      <label>Question Time (Sec)</label>
+      <input type="number" id="qtime-input" value="20" min="5" max="60" style="width: 70px;">
+    </div>
+  </div>
+
+  <button class="btn-big" onclick="startGame()">Start Game 🚀</button>
+</div>
+
+<!-- ── WIN OVERLAY ── -->
+<div id="win-overlay" style="display: none;">
+  <div class="ov-icon">🏆</div>
+  <div class="ov-title" style="color:var(--gold)">Session Complete!</div>
+  <div id="final-score" style="font-family:'Space Mono'; font-size: 42px; color: var(--accent); font-weight:700;">0</div>
+  <div class="ov-desc" id="final-stats">Steps: 0 | Misses: 0</div>
+  <button class="btn-big" onclick="showMenu()">Main Menu</button>
+</div>
+
+<!-- ── GAME HEADER ── -->
+<div id="hdr">
+  <div class="hd-stat"><div class="hd-val" id="s-score" style="color:var(--accent2)">0</div><div class="hd-lbl">SCORE</div></div>
+  <div class="hd-sep"></div>
+  <div class="hd-stat"><div class="hd-val" id="s-step" style="color:var(--accent)">0</div><div class="hd-lbl">STEPS</div></div>
+  <div class="hd-sep"></div>
+  <div class="hd-stat"><div class="hd-val" id="s-miss" style="color:var(--warn)">0</div><div class="hd-lbl">MISSES</div></div>
+  <button id="btn-menu" onclick="showMenu()">☰</button>
+</div>
+
+<!-- ── GAME LAYOUT ── -->
+<div id="game-layout">
+  <!-- Question Card -->
+  <div id="q-card">
+    <div id="q-timer-bar"></div>
+    <div id="q-badge" style="background:rgba(124,106,247,0.15); color:var(--accent2)">Task Engine</div>
+    <div id="q-text">Get ready...</div>
+    
+    <!-- Input Math -->
+    <div id="ans-row" style="display:none;">
+      <input type="number" id="ans-input" placeholder="Answer..." inputmode="decimal">
+      <button class="btn-sm" onclick="checkMath()">OK</button>
+    </div>
+    
+    <!-- Voice Self-Check -->
+    <div id="ans-voice-row" style="display:none; gap:6px; width:100%; max-width:280px;">
+      <button class="btn-voice" style="background:rgba(0,229,160,0.2); color:var(--accent);" onclick="voiceCheck(true)">✓ Correct</button>
+      <button class="btn-voice" style="background:rgba(255,107,107,0.2); color:var(--warn);" onclick="voiceCheck(false)">✗ Missed</button>
+    </div>
+  </div>
+
+  <div id="fb-bar">Ready</div>
+
+  <!-- Canvas Path Game -->
+  <div id="canvas-wrap">
+    <canvas id="gameCanvas" width="350" height="380"></canvas>
+  </div>
+
+  <!-- Action Controls -->
+  <div id="controls">
+    <button class="btn-tap" id="btn-left" onclick="handleTap(0)">Left Path (A)</button>
+    <button class="btn-tap" id="btn-right" onclick="handleTap(1)">Right Path (L)</button>
+  </div>
+</div>
+
+<script>
+// ── PWA SERVICE WORKER REGISTRATION ──
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW Registered:', reg.scope))
+      .catch(err => console.log('SW Register Failed:', err));
+  });
+}
+
+// ── AUDIO & ENGINE ──
+let audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+function playBeep(freq = 850, dur = 0.12) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + dur);
+}
+
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+// ── DYNAMIC RANDOM QUESTION GENERATOR (100% RANDOM) ──
+
+// 1. Math Questions Generator
+function generateMathQuestion() {
+  const types = ['mult', 'div', 'percent', 'sub_add'];
+  const t = types[Math.floor(Math.random() * types.length)];
+  
+  if (t === 'mult') {
+    const a = Math.floor(Math.random() * 20) + 12;
+    const b = Math.floor(Math.random() * 8) + 3;
+    return { q: `${a} × ${b} = ?`, ans: a * b, type: 'math', spk: `${a} times ${b}` };
+  } else if (t === 'div') {
+    const b = Math.floor(Math.random() * 12) + 4;
+    const ans = Math.floor(Math.random() * 15) + 5;
+    const a = b * ans;
+    return { q: `${a} ÷ ${b} = ?`, ans: ans, type: 'math', spk: `${a} divided by ${b}` };
+  } else if (t === 'percent') {
+    const p = (Math.floor(Math.random() * 4) + 1) * 10;
+    const base = (Math.floor(Math.random() * 8) + 2) * 50;
+    return { q: `${p}% of ${base} = ?`, ans: (p / 100) * base, type: 'math', spk: `${p} percent of ${base}` };
+  } else {
+    const a = Math.floor(Math.random() * 40) + 50;
+    const b = Math.floor(Math.random() * 20) + 10;
+    const c = Math.floor(Math.random() * 15) + 5;
+    return { q: `${a} - ${b} + ${c} = ?`, ans: a - b + c, type: 'math', spk: `${a} minus ${b} plus ${c}` };
+  }
+}
+
+// 2. Direction & Heading Generator
+function generateDirectionQuestion() {
+  const dirs = ['North', 'East', 'South', 'West'];
+  const turns = [
+    { deg: 90, label: '90°' },
+    { deg: 180, label: '180°' },
+    { deg: 270, label: '270°' }
+  ];
+  const side = Math.random() < 0.5 ? 'Right' : 'Left';
+  
+  const startIdx = Math.floor(Math.random() * dirs.length);
+  const turn = turns[Math.floor(Math.random() * turns.length)];
+  
+  let steps = turn.deg / 90;
+  if (side === 'Left') steps = -steps;
+  
+  let endIdx = (startIdx + steps) % 4;
+  if (endIdx < 0) endIdx += 4;
+  
+  const startDir = dirs[startIdx];
+  const targetDir = dirs[endIdx];
+
+  return {
+    q: `Facing ${startDir} → Turn ${side} ${turn.label}?`,
+    ans: targetDir,
+    spk: `Facing ${startDir}. Turn ${side} ${turn.deg} degrees. Which direction?`,
+    type: 'voice'
+  };
+}
+
+// 3. Time Arithmetic Generator
+function generateTimeQuestion() {
+  const hour = Math.floor(Math.random() * 12) + 8; // 08 to 20
+  const min = Math.floor(Math.random() * 12) * 5; // 00, 05, 10 ... 55
+  const isAdd = Math.random() < 0.5;
+  const deltaMin = (Math.floor(Math.random() * 8) + 2) * 5; // 10 to 45 mins
+
+  let totalMin = hour * 60 + min;
+  if (isAdd) totalMin += deltaMin;
+  else totalMin -= deltaMin;
+
+  if (totalMin < 0) totalMin += 24 * 60;
+  
+  const resH = Math.floor(totalMin / 60) % 24;
+  const resM = totalMin % 60;
+
+  const pad = (n) => n.toString().padStart(2, '0');
+  const startStr = `${pad(hour)}:${pad(min)}`;
+  const ansStr = `${pad(resH)}:${pad(resM)}`;
+  const opWord = isAdd ? 'later' : 'ago';
+
+  return {
+    q: `Time: ${startStr}\n${deltaMin} min ${opWord} was?`,
+    ans: ansStr,
+    spk: `Time is ${startStr}. What time is ${deltaMin} minutes ${opWord}?`,
+    type: 'voice'
+  };
+}
+
+// 4. Memory Digit Reverse Generator
+function generateDigitReverseQuestion() {
+  const len = Math.floor(Math.random() * 3) + 5; // 5 to 7 digits
+  const digits = [];
+  for (let i = 0; i < len; i++) {
+    digits.push(Math.floor(Math.random() * 10));
+  }
+  
+  const qStr = digits.join(' · ');
+  const revStr = [...digits].reverse().join('-');
+  const spkStr = digits.join(', ');
+
+  return {
+    q: `Remember: ${qStr}\n(Recite Backwards)`,
+    ans: revStr,
+    spk: `Remember numbers: ${spkStr}. Recite in reverse order.`,
+    type: 'voice'
+  };
+}
+
+// 5. Memory Words Generator
+function generateWordListQuestion() {
+  const wordPool = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'Engine', 'Flap', 'Gear', 'Altitude', 'Rudder', 'Vector'];
+  const shuffled = [...wordPool].sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 4);
+
+  const qStr = selected.join(' · ');
+  const ansStr = selected.join(' ');
+  const spkStr = selected.join(', ');
+
+  return {
+    q: `Remember Words:\n${qStr}`,
+    ans: ansStr,
+    spk: `Remember words: ${spkStr}. Repeat in order.`,
+    type: 'voice'
+  };
+}
+
+// Master Randomizer Engine
+function generateAnyRandomQuestion() {
+  const pick = Math.floor(Math.random() * 5);
+  switch (pick) {
+    case 0: return generateMathQuestion();
+    case 1: return generateDirectionQuestion();
+    case 2: return generateTimeQuestion();
+    case 3: return generateDigitReverseQuestion();
+    case 4: return generateWordListQuestion();
+  }
+}
+
+// ── GAME STATE ──
+const TOTAL_POINTS = 12;
+let isRunning = false;
+let score = 0, steps = 0, misses = 0;
+let leftPath = [], rightPath = [];
+let currentStep = 0, currentSide = 0;
+
+let lastBeatTime = 0;
+let baseBeatInterval = 1000;
+let currentNextInterval = 1000;
+let rhythmMode = 'fixed';
+let allowedWindow = 1000;
+let beatTimeout = null;
+let hasTappedThisBeat = false;
+let isAudioBeeping = false;
+
+// Error FX State
+let errorFlashTimeout = null;
+let isErrorState = false;
+
+// Question Timer State
+let curQ = null;
+let qRotateDuration = 20000;
+let qInterval = null;
+let isQTextRevealed = false;
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+function generateMap() {
+  leftPath = []; rightPath = [];
+  const startY = canvas.height - 30;
+  const endY = 30;
+  const stepY = (startY - endY) / (TOTAL_POINTS - 1);
+  const leftBaseX = canvas.width * 0.28;
+  const rightBaseX = canvas.width * 0.72;
+
+  for (let i = 0; i < TOTAL_POINTS; i++) {
+    const y = startY - (i * stepY);
+    leftPath.push({ x: leftBaseX + Math.sin(i * 0.8) * 25, y: y });
+    rightPath.push({ x: rightBaseX + Math.cos(i * 0.8) * 25, y: y });
+  }
+}
+
+function startGame() {
+  initAudio();
+  isRunning = true;
+  score = 0; steps = 0; misses = 0;
+  currentStep = 0; currentSide = 0;
+  
+  rhythmMode = document.getElementById('pattern-sel').value;
+  baseBeatInterval = parseInt(document.getElementById('bpm-sel').value);
+  allowedWindow = parseInt(document.getElementById('window-sel').value);
+  
+  const qTimeInput = parseInt(document.getElementById('qtime-input').value);
+  qRotateDuration = (isNaN(qTimeInput) || qTimeInput < 5 ? 20 : qTimeInput) * 1000;
+
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('win-overlay').style.display = 'none';
+  
+  updateStats();
+  generateMap();
+  scheduleNextBeat(true);
+  nextQuestion();
+  requestAnimationFrame(render);
+}
+
+function showMenu() {
+  isRunning = false;
+  clearTimeout(beatTimeout);
+  clearInterval(qInterval);
+  document.getElementById('overlay').style.display = 'flex';
+  document.getElementById('win-overlay').style.display = 'none';
+}
+
+function updateStats() {
+  document.getElementById('s-score').innerText = score;
+  document.getElementById('s-step').innerText = steps;
+  document.getElementById('s-miss').innerText = misses;
+}
+
+function setFeedback(msg, isErr = false) {
+  const fb = document.getElementById('fb-bar');
+  fb.innerText = msg;
+  fb.style.color = isErr ? 'var(--warn)' : 'var(--accent)';
+}
+
+function triggerErrorVisual() {
+  isErrorState = true;
+  clearTimeout(errorFlashTimeout);
+  errorFlashTimeout = setTimeout(() => {
+    isErrorState = false;
+  }, 400);
+}
+
+// ── RHYTHM BEAT ENGINE (FIXED / RANDOM PATTERN) ──
+function scheduleNextBeat(isFirst = false) {
+  if (!isRunning) return;
+
+  if (!isFirst && !hasTappedThisBeat) {
+    recordMiss("Missed Beat!");
+  }
+
+  playBeep();
+  lastBeatTime = performance.now();
+  hasTappedThisBeat = false;
+  isAudioBeeping = true;
+
+  if (rhythmMode === 'random') {
+    const variance = (Math.random() * 0.6) - 0.3;
+    currentNextInterval = Math.max(500, Math.round(baseBeatInterval * (1 + variance)));
+  } else {
+    currentNextInterval = baseBeatInterval;
+  }
+
+  beatTimeout = setTimeout(() => scheduleNextBeat(false), currentNextInterval);
+}
+
+function recordMiss(reason) {
+  misses++;
+  setFeedback(reason, true);
+  triggerErrorVisual();
+  updateStats();
+}
+
+function handleTap(side) {
+  if (!isRunning) return;
+
+  const now = performance.now();
+  const timeSinceBeat = now - lastBeatTime;
+
+  if (!isAudioBeeping || timeSinceBeat < 0 || timeSinceBeat > allowedWindow) {
+    recordMiss("Early / Late Tap!");
+    return;
+  }
+
+  if (hasTappedThisBeat) {
+    recordMiss("Double Tap!");
+    return;
+  }
+
+  hasTappedThisBeat = true;
+
+  if (side === currentSide) {
+    score += 10;
+    steps++;
+    setFeedback("Good Tap!", false);
+
+    if (currentSide === 0) {
+      currentSide = 1;
+    } else {
+      currentSide = 0;
+      currentStep++;
+    }
+
+    if (currentStep >= TOTAL_POINTS) {
+      currentStep = 0;
+      currentSide = 0;
+      generateMap();
+    }
+    updateStats();
+  } else {
+    recordMiss("Wrong Side!");
+  }
+}
+
+// ── COGNITIVE TASK ENGINE (DYNAMIC 100% RANDOM + 50% REVEAL) ──
+function nextQuestion() {
+  if (!isRunning) return;
+  
+  // สุ่มโจทย์ใหม่สดๆ ทุกครั้งที่เรียกใช้
+  curQ = generateAnyRandomQuestion();
+  
+  const qText = document.getElementById('q-text');
+  isQTextRevealed = false;
+
+  qText.innerText = '🎧 Listening...';
+  qText.className = '';
+  
+  if (curQ.spk) speak(curQ.spk);
+
+  document.getElementById('ans-row').style.display = curQ.type === 'math' ? 'flex' : 'none';
+  document.getElementById('ans-voice-row').style.display = curQ.type === 'voice' ? 'flex' : 'none';
+  document.getElementById('ans-input').value = '';
+
+  clearInterval(qInterval);
+  const timerBar = document.getElementById('q-timer-bar');
+  timerBar.style.width = '100%';
+
+  const stepTime = 100;
+  let elapsed = 0;
+
+  qInterval = setInterval(() => {
+    if (!isRunning) {
+      clearInterval(qInterval);
+      return;
+    }
+    elapsed += stepTime;
+    const percentage = Math.max(0, 100 - (elapsed / qRotateDuration) * 100);
+    timerBar.style.width = percentage + '%';
+
+    // แสดงโจทย์บนหน้าจอเมื่อผ่านเวลาไป 50%
+    if (!isQTextRevealed && elapsed >= qRotateDuration / 2) {
+      isQTextRevealed = true;
+      qText.innerText = curQ.q;
+      qText.className = 'revealed';
+    }
+
+    if (elapsed >= qRotateDuration) {
+      clearInterval(qInterval);
+      setFeedback("Time's Up! Next Question", true);
+      nextQuestion();
+    }
+  }, stepTime);
+}
+
+function checkMath() {
+  if (!curQ || curQ.type !== 'math') return;
+  const val = parseFloat(document.getElementById('ans-input').value);
+  if (val === curQ.ans) {
+    score += 50;
+    setFeedback("Task Correct! +50", false);
+  } else {
+    misses++;
+    setFeedback(`Task Wrong! (Ans: ${curQ.ans})`, true);
+  }
+  updateStats();
+  nextQuestion();
+}
+
+function voiceCheck(isCorrect) {
+  if (isCorrect) {
+    score += 50;
+    setFeedback("Task Correct! +50", false);
+  } else {
+    misses++;
+    setFeedback(`Task Missed! (Ans: ${curQ.ans})`, true);
+  }
+  updateStats();
+  nextQuestion();
+}
+
+// ── INPUT CONTROLS ──
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyA') handleTap(0);
+  if (e.code === 'KeyL') handleTap(1);
+  if (e.code === 'Enter') checkMath();
+});
+
+// ── CANVAS RENDER ──
+function render() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (leftPath.length === 0) return;
+
+  ctx.strokeStyle = '#1e2d40';
+  ctx.lineWidth = 3;
+  
+  ctx.beginPath();
+  leftPath.forEach((pt, i) => i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y));
+  ctx.stroke();
+
+  ctx.beginPath();
+  rightPath.forEach((pt, i) => i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y));
+  ctx.stroke();
+
+  for (let i = 0; i < TOTAL_POINTS; i++) {
+    drawDot(leftPath[i], i, 0);
+    drawDot(rightPath[i], i, 1);
+  }
+
+  if (isRunning) requestAnimationFrame(render);
+}
+
+function drawDot(pt, stepIndex, side) {
+  ctx.beginPath();
+  const isCurrentTarget = (stepIndex === currentStep && side === currentSide);
+  const isPassed = (stepIndex < currentStep) || (stepIndex === currentStep && currentSide === 1 && side === 0);
+
+  ctx.arc(pt.x, pt.y, isCurrentTarget ? 14 : 10, 0, Math.PI * 2);
+
+  if (isCurrentTarget) {
+    if (isErrorState) {
+      ctx.fillStyle = '#ff6b6b';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+    } else {
+      ctx.fillStyle = '#00e5a0';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+    }
+  } else if (isPassed) {
+    ctx.fillStyle = '#1e2d40';
+    ctx.strokeStyle = '#7a9bb0';
+    ctx.lineWidth = 1;
+  } else {
+    ctx.fillStyle = '#162030';
+    ctx.strokeStyle = '#253344';
+    ctx.lineWidth = 1.5;
+  }
+
+  ctx.fill();
+  ctx.stroke();
+
+  if (isCurrentTarget && isErrorState) {
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, 22, 0, Math.PI * 2);
+    ctx.strokeStyle = '#ff6b6b';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+}
+
+render();
+</script>
+</body>
+</html>
