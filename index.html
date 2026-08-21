@@ -103,7 +103,7 @@ body {
 
 /* Canvas Game */
 #canvas-wrap { flex: 1; width: 100%; display: flex; justify-content: center; align-items: center; min-height: 0; }
-canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r); touch-action: none; }
+canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r); touch-action: none; cursor: pointer; }
 
 /* Controls */
 #controls { width: 100%; display: flex; gap: 10px; }
@@ -125,7 +125,7 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
   <div class="ov-icon">🧠⚡</div>
   <div class="ov-title">Multitask Rhythm</div>
   <div class="ov-line"></div>
-  <div class="ov-desc">Tap left/right along the path strictly on beat while solving cognitive math & memory challenges!</div>
+  <div class="ov-desc">Tap directly on the target dots or use buttons strictly on beat while solving cognitive tasks!</div>
 
   <div class="ov-settings">
     <div class="ov-row">
@@ -216,7 +216,6 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
 </div>
 
 <script>
-// ── PWA SERVICE WORKER REGISTRATION ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
@@ -253,9 +252,7 @@ function speak(text) {
   window.speechSynthesis.speak(u);
 }
 
-// ── DYNAMIC RANDOM QUESTION GENERATOR (100% RANDOM) ──
-
-// 1. Math Questions Generator
+// ── DYNAMIC RANDOM QUESTION GENERATOR ──
 function generateMathQuestion() {
   const types = ['mult', 'div', 'percent', 'sub_add'];
   const t = types[Math.floor(Math.random() * types.length)];
@@ -281,104 +278,44 @@ function generateMathQuestion() {
   }
 }
 
-// 2. Direction & Heading Generator
 function generateDirectionQuestion() {
   const dirs = ['North', 'East', 'South', 'West'];
-  const turns = [
-    { deg: 90, label: '90°' },
-    { deg: 180, label: '180°' },
-    { deg: 270, label: '270°' }
-  ];
+  const turns = [{ deg: 90, label: '90°' }, { deg: 180, label: '180°' }, { deg: 270, label: '270°' }];
   const side = Math.random() < 0.5 ? 'Right' : 'Left';
-  
   const startIdx = Math.floor(Math.random() * dirs.length);
   const turn = turns[Math.floor(Math.random() * turns.length)];
-  
   let steps = turn.deg / 90;
   if (side === 'Left') steps = -steps;
-  
   let endIdx = (startIdx + steps) % 4;
   if (endIdx < 0) endIdx += 4;
-  
-  const startDir = dirs[startIdx];
-  const targetDir = dirs[endIdx];
-
-  return {
-    q: `Facing ${startDir} → Turn ${side} ${turn.label}?`,
-    ans: targetDir,
-    spk: `Facing ${startDir}. Turn ${side} ${turn.deg} degrees. Which direction?`,
-    type: 'voice'
-  };
+  return { q: `Facing ${dirs[startIdx]} → Turn ${side} ${turn.label}?`, ans: dirs[endIdx], spk: `Facing ${dirs[startIdx]}. Turn ${side} ${turn.deg} degrees. Which direction?`, type: 'voice' };
 }
 
-// 3. Time Arithmetic Generator
 function generateTimeQuestion() {
-  const hour = Math.floor(Math.random() * 12) + 8; // 08 to 20
-  const min = Math.floor(Math.random() * 12) * 5; // 00, 05, 10 ... 55
+  const hour = Math.floor(Math.random() * 12) + 8;
+  const min = Math.floor(Math.random() * 12) * 5;
   const isAdd = Math.random() < 0.5;
-  const deltaMin = (Math.floor(Math.random() * 8) + 2) * 5; // 10 to 45 mins
-
+  const deltaMin = (Math.floor(Math.random() * 8) + 2) * 5;
   let totalMin = hour * 60 + min;
-  if (isAdd) totalMin += deltaMin;
-  else totalMin -= deltaMin;
-
+  totalMin += isAdd ? deltaMin : -deltaMin;
   if (totalMin < 0) totalMin += 24 * 60;
-  
-  const resH = Math.floor(totalMin / 60) % 24;
-  const resM = totalMin % 60;
-
   const pad = (n) => n.toString().padStart(2, '0');
-  const startStr = `${pad(hour)}:${pad(min)}`;
-  const ansStr = `${pad(resH)}:${pad(resM)}`;
   const opWord = isAdd ? 'later' : 'ago';
-
-  return {
-    q: `Time: ${startStr}\n${deltaMin} min ${opWord} was?`,
-    ans: ansStr,
-    spk: `Time is ${startStr}. What time is ${deltaMin} minutes ${opWord}?`,
-    type: 'voice'
-  };
+  return { q: `Time: ${pad(hour)}:${pad(min)}\n${deltaMin} min ${opWord} was?`, ans: `${pad(Math.floor(totalMin / 60) % 24)}:${pad(totalMin % 60)}`, spk: `Time is ${pad(hour)}:${pad(min)}. What time is ${deltaMin} minutes ${opWord}?`, type: 'voice' };
 }
 
-// 4. Memory Digit Reverse Generator
 function generateDigitReverseQuestion() {
-  const len = Math.floor(Math.random() * 3) + 5; // 5 to 7 digits
-  const digits = [];
-  for (let i = 0; i < len; i++) {
-    digits.push(Math.floor(Math.random() * 10));
-  }
-  
-  const qStr = digits.join(' · ');
-  const revStr = [...digits].reverse().join('-');
-  const spkStr = digits.join(', ');
-
-  return {
-    q: `Remember: ${qStr}\n(Recite Backwards)`,
-    ans: revStr,
-    spk: `Remember numbers: ${spkStr}. Recite in reverse order.`,
-    type: 'voice'
-  };
+  const len = Math.floor(Math.random() * 3) + 5;
+  const digits = Array.from({length: len}, () => Math.floor(Math.random() * 10));
+  return { q: `Remember: ${digits.join(' · ')}\n(Recite Backwards)`, ans: [...digits].reverse().join('-'), spk: `Remember numbers: ${digits.join(', ')}. Recite in reverse order.`, type: 'voice' };
 }
 
-// 5. Memory Words Generator
 function generateWordListQuestion() {
   const wordPool = ['Alpha', 'Bravo', 'Charlie', 'Delta', 'Echo', 'Foxtrot', 'Golf', 'Hotel', 'Engine', 'Flap', 'Gear', 'Altitude', 'Rudder', 'Vector'];
-  const shuffled = [...wordPool].sort(() => 0.5 - Math.random());
-  const selected = shuffled.slice(0, 4);
-
-  const qStr = selected.join(' · ');
-  const ansStr = selected.join(' ');
-  const spkStr = selected.join(', ');
-
-  return {
-    q: `Remember Words:\n${qStr}`,
-    ans: ansStr,
-    spk: `Remember words: ${spkStr}. Repeat in order.`,
-    type: 'voice'
-  };
+  const selected = [...wordPool].sort(() => 0.5 - Math.random()).slice(0, 4);
+  return { q: `Remember Words:\n${selected.join(' · ')}`, ans: selected.join(' '), spk: `Remember words: ${selected.join(', ')}. Repeat in order.`, type: 'voice' };
 }
 
-// Master Randomizer Engine
 function generateAnyRandomQuestion() {
   const pick = Math.floor(Math.random() * 5);
   switch (pick) {
@@ -406,11 +343,9 @@ let beatTimeout = null;
 let hasTappedThisBeat = false;
 let isAudioBeeping = false;
 
-// Error FX State
 let errorFlashTimeout = null;
 let isErrorState = false;
 
-// Question Timer State
 let curQ = null;
 let qRotateDuration = 20000;
 let qInterval = null;
@@ -480,12 +415,10 @@ function setFeedback(msg, isErr = false) {
 function triggerErrorVisual() {
   isErrorState = true;
   clearTimeout(errorFlashTimeout);
-  errorFlashTimeout = setTimeout(() => {
-    isErrorState = false;
-  }, 400);
+  errorFlashTimeout = setTimeout(() => { isErrorState = false; }, 400);
 }
 
-// ── RHYTHM BEAT ENGINE (FIXED / RANDOM PATTERN) ──
+// ── RHYTHM BEAT ENGINE ──
 function scheduleNextBeat(isFirst = false) {
   if (!isRunning) return;
 
@@ -556,13 +489,52 @@ function handleTap(side) {
   }
 }
 
-// ── COGNITIVE TASK ENGINE (DYNAMIC 100% RANDOM + 50% REVEAL) ──
+// ── CANVAS TOUCH / DIRECT DOT CLICK HANDLER (FOR IPAD) ──
+function handleCanvasPointer(e) {
+  if (!isRunning) return;
+  e.preventDefault();
+
+  const rect = canvas.getBoundingClientRect();
+  const touchX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+  const touchY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  const canvasX = touchX * scaleX;
+  const canvasY = touchY * scaleY;
+
+  // ค้นหาเป้าหมายปัจจุบัน
+  const targetDot = (currentSide === 0) ? leftPath[currentStep] : rightPath[currentStep];
+  const touchRadius = 35; // ขยายรัศมีให้แตะง่ายบนหน้าจอ iPad
+
+  const dist = Math.hypot(canvasX - targetDot.x, canvasY - targetDot.y);
+
+  if (dist <= touchRadius) {
+    handleTap(currentSide);
+  } else {
+    // ถ้าแตะฝั่งตรงข้ามหรือจุดอื่น
+    const otherSide = currentSide === 0 ? 1 : 0;
+    const otherDot = (otherSide === 0) ? leftPath[currentStep] : rightPath[currentStep];
+    const distOther = Math.hypot(canvasX - otherDot.x, canvasY - otherDot.y);
+    
+    if (distOther <= touchRadius) {
+      handleTap(otherSide);
+    } else {
+      // แตะนอกจุดเป้าหมาย ให้ระบุตามซีกฝั่งหน้าจอ (ซ้าย/ขวา)
+      const sideByScreen = canvasX < (canvas.width / 2) ? 0 : 1;
+      handleTap(sideByScreen);
+    }
+  }
+}
+
+canvas.addEventListener('pointerdown', handleCanvasPointer);
+
+// ── COGNITIVE TASK ENGINE ──
 function nextQuestion() {
   if (!isRunning) return;
   
-  // สุ่มโจทย์ใหม่สดๆ ทุกครั้งที่เรียกใช้
   curQ = generateAnyRandomQuestion();
-  
   const qText = document.getElementById('q-text');
   isQTextRevealed = false;
 
@@ -591,7 +563,6 @@ function nextQuestion() {
     const percentage = Math.max(0, 100 - (elapsed / qRotateDuration) * 100);
     timerBar.style.width = percentage + '%';
 
-    // แสดงโจทย์บนหน้าจอเมื่อผ่านเวลาไป 50%
     if (!isQTextRevealed && elapsed >= qRotateDuration / 2) {
       isQTextRevealed = true;
       qText.innerText = curQ.q;
@@ -632,7 +603,7 @@ function voiceCheck(isCorrect) {
   nextQuestion();
 }
 
-// ── INPUT CONTROLS ──
+// ── KEYBOARD CONTROLS ──
 window.addEventListener('keydown', (e) => {
   if (e.code === 'KeyA') handleTap(0);
   if (e.code === 'KeyL') handleTap(1);
@@ -668,7 +639,7 @@ function drawDot(pt, stepIndex, side) {
   const isCurrentTarget = (stepIndex === currentStep && side === currentSide);
   const isPassed = (stepIndex < currentStep) || (stepIndex === currentStep && currentSide === 1 && side === 0);
 
-  ctx.arc(pt.x, pt.y, isCurrentTarget ? 14 : 10, 0, Math.PI * 2);
+  ctx.arc(pt.x, pt.y, isCurrentTarget ? 15 : 10, 0, Math.PI * 2);
 
   if (isCurrentTarget) {
     if (isErrorState) {
