@@ -9,7 +9,6 @@
 <meta name="theme-color" content="#0f1923">
 <title>Multitask Rhythm & Brain Walk</title>
 
-<!-- PWA Manifest & Icons Integration -->
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -32,7 +31,6 @@ body {
   padding-top: var(--safe-top); padding-bottom: var(--safe-bot);
 }
 
-/* ── OVERLAY SETUP ── */
 #overlay, #win-overlay {
   position: fixed; inset: 0; z-index: 200; background: var(--bg);
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
@@ -59,7 +57,6 @@ body {
 }
 .btn-big:active { transform: scale(0.97); }
 
-/* ── HEADER STATS ── */
 #hdr {
   width: 100%; max-width: 420px; display: flex; align-items: center; padding: 10px 16px;
   gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
@@ -74,13 +71,11 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 
-/* ── MAIN CONTENT AREA ── */
 #game-layout {
   flex: 1; width: 100%; max-width: 420px; display: flex; flex-direction: column;
   justify-content: space-between; align-items: center; padding: 8px 12px; gap: 8px; min-height: 0;
 }
 
-/* Question Card */
 #q-card {
   width: 100%; background: var(--bg2); border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--r); padding: 10px 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
@@ -101,11 +96,9 @@ body {
 .btn-sm { padding: 6px 14px; border-radius: 8px; background: var(--accent); color: #0a1410; font-weight: 700; border: none; cursor: pointer; }
 .btn-voice { flex: 1; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 12px; border: none; cursor: pointer; }
 
-/* Canvas Game */
 #canvas-wrap { flex: 1; width: 100%; display: flex; justify-content: center; align-items: center; min-height: 0; }
 canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r); touch-action: none; cursor: pointer; }
 
-/* Controls */
 #controls { width: 100%; display: flex; gap: 10px; }
 .btn-tap {
   flex: 1; padding: 14px; border-radius: var(--r); border: none; color: #fff;
@@ -120,12 +113,11 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
 </head>
 <body>
 
-<!-- ── START OVERLAY ── -->
 <div id="overlay">
   <div class="ov-icon">🧠⚡</div>
   <div class="ov-title">Multitask Rhythm</div>
   <div class="ov-line"></div>
-  <div class="ov-desc">Tap directly on the target dots or use buttons strictly on beat while solving cognitive tasks!</div>
+  <div class="ov-desc">Tap directly on the dots or buttons strictly on beat while solving cognitive tasks!</div>
 
   <div class="ov-settings">
     <div class="ov-row">
@@ -136,11 +128,13 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
       </select>
     </div>
     <div class="ov-row">
-      <label>Base Rhythm Speed</label>
+      <label>Rhythm Speed (BPM)</label>
       <select id="bpm-sel">
-        <option value="1200">Slow (1.2s)</option>
-        <option value="1000" selected>Normal (1.0s)</option>
-        <option value="800">Fast (0.8s)</option>
+        <option value="50">50 BPM (Slow)</option>
+        <option value="60" selected>60 BPM (Normal)</option>
+        <option value="75">75 BPM (Medium)</option>
+        <option value="90">90 BPM (Fast)</option>
+        <option value="100">100 BPM (Pro)</option>
       </select>
     </div>
     <div class="ov-row">
@@ -161,7 +155,6 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
   <button class="btn-big" onclick="startGame()">Start Game 🚀</button>
 </div>
 
-<!-- ── WIN OVERLAY ── -->
 <div id="win-overlay" style="display: none;">
   <div class="ov-icon">🏆</div>
   <div class="ov-title" style="color:var(--gold)">Session Complete!</div>
@@ -170,7 +163,6 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
   <button class="btn-big" onclick="showMenu()">Main Menu</button>
 </div>
 
-<!-- ── GAME HEADER ── -->
 <div id="hdr">
   <div class="hd-stat"><div class="hd-val" id="s-score" style="color:var(--accent2)">0</div><div class="hd-lbl">SCORE</div></div>
   <div class="hd-sep"></div>
@@ -180,21 +172,17 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
   <button id="btn-menu" onclick="showMenu()">☰</button>
 </div>
 
-<!-- ── GAME LAYOUT ── -->
 <div id="game-layout">
-  <!-- Question Card -->
   <div id="q-card">
     <div id="q-timer-bar"></div>
     <div id="q-badge" style="background:rgba(124,106,247,0.15); color:var(--accent2)">Task Engine</div>
     <div id="q-text">Get ready...</div>
     
-    <!-- Input Math -->
     <div id="ans-row" style="display:none;">
       <input type="number" id="ans-input" placeholder="Answer..." inputmode="decimal">
       <button class="btn-sm" onclick="checkMath()">OK</button>
     </div>
     
-    <!-- Voice Self-Check -->
     <div id="ans-voice-row" style="display:none; gap:6px; width:100%; max-width:280px;">
       <button class="btn-voice" style="background:rgba(0,229,160,0.2); color:var(--accent);" onclick="voiceCheck(true)">✓ Correct</button>
       <button class="btn-voice" style="background:rgba(255,107,107,0.2); color:var(--warn);" onclick="voiceCheck(false)">✗ Missed</button>
@@ -203,12 +191,10 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
 
   <div id="fb-bar">Ready</div>
 
-  <!-- Canvas Path Game -->
   <div id="canvas-wrap">
-    <canvas id="gameCanvas" width="350" height="380"></canvas>
+    <canvas id="gameCanvas" width="350" height="420"></canvas>
   </div>
 
-  <!-- Action Controls -->
   <div id="controls">
     <button class="btn-tap" id="btn-left" onclick="handleTap(0)">Left Path (A)</button>
     <button class="btn-tap" id="btn-right" onclick="handleTap(1)">Right Path (L)</button>
@@ -224,24 +210,46 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// ── AUDIO & ENGINE ──
+// ── AUDIO SYSTEM FIX FOR IPAD / IOS ──
 let audioCtx = null;
 
 function initAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
 }
 
+// ปลดล็อก AudioContext ผ่าน Touch ทันทีที่ผู้ใช้แตะหน้าจอ
+function unlockAudio() {
+  initAudio();
+  if (audioCtx && audioCtx.state === 'running') {
+    const buffer = audioCtx.createBuffer(1, 1, 22050);
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioCtx.destination);
+    source.start(0);
+  }
+}
+window.addEventListener('touchstart', unlockAudio, { once: true });
+window.addEventListener('pointerdown', unlockAudio, { once: true });
+
 function playBeep(freq = 850, dur = 0.12) {
-  if (!audioCtx) return;
+  initAudio();
+  if (!audioCtx || audioCtx.state !== 'running') return;
+  
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = 'sine';
   osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(); osc.stop(audioCtx.currentTime + dur);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(audioCtx.currentTime);
+  osc.stop(audioCtx.currentTime + dur);
 }
 
 function speak(text) {
@@ -252,7 +260,7 @@ function speak(text) {
   window.speechSynthesis.speak(u);
 }
 
-// ── DYNAMIC RANDOM QUESTION GENERATOR ──
+// ── COGNITIVE TASK GENERATOR ──
 function generateMathQuestion() {
   const types = ['mult', 'div', 'percent', 'sub_add'];
   const t = types[Math.floor(Math.random() * types.length)];
@@ -328,7 +336,7 @@ function generateAnyRandomQuestion() {
 }
 
 // ── GAME STATE ──
-const TOTAL_POINTS = 12;
+const TOTAL_POINTS = 10;
 let isRunning = false;
 let score = 0, steps = 0, misses = 0;
 let leftPath = [], rightPath = [];
@@ -356,29 +364,30 @@ const ctx = canvas.getContext('2d');
 
 function generateMap() {
   leftPath = []; rightPath = [];
-  const startY = canvas.height - 30;
-  const endY = 30;
+  const startY = canvas.height - 40;
+  const endY = 40;
   const stepY = (startY - endY) / (TOTAL_POINTS - 1);
   const leftBaseX = canvas.width * 0.28;
   const rightBaseX = canvas.width * 0.72;
 
   for (let i = 0; i < TOTAL_POINTS; i++) {
     const y = startY - (i * stepY);
-    leftPath.push({ x: leftBaseX + Math.sin(i * 0.8) * 25, y: y });
-    rightPath.push({ x: rightBaseX + Math.cos(i * 0.8) * 25, y: y });
+    leftPath.push({ x: leftBaseX + Math.sin(i * 0.8) * 20, y: y });
+    rightPath.push({ x: rightBaseX + Math.cos(i * 0.8) * 20, y: y });
   }
 }
 
 function startGame() {
-  initAudio();
+  unlockAudio();
   isRunning = true;
   score = 0; steps = 0; misses = 0;
   currentStep = 0; currentSide = 0;
   
   rhythmMode = document.getElementById('pattern-sel').value;
-  baseBeatInterval = parseInt(document.getElementById('bpm-sel').value);
-  allowedWindow = parseInt(document.getElementById('window-sel').value);
+  const bpm = parseInt(document.getElementById('bpm-sel').value);
+  baseBeatInterval = (60 / bpm) * 1000; // แปลง BPM เป็นระยะเวลามิลลิวินาที
   
+  allowedWindow = parseInt(document.getElementById('window-sel').value);
   const qTimeInput = parseInt(document.getElementById('qtime-input').value);
   qRotateDuration = (isNaN(qTimeInput) || qTimeInput < 5 ? 20 : qTimeInput) * 1000;
 
@@ -418,7 +427,6 @@ function triggerErrorVisual() {
   errorFlashTimeout = setTimeout(() => { isErrorState = false; }, 400);
 }
 
-// ── RHYTHM BEAT ENGINE ──
 function scheduleNextBeat(isFirst = false) {
   if (!isRunning) return;
 
@@ -433,7 +441,7 @@ function scheduleNextBeat(isFirst = false) {
 
   if (rhythmMode === 'random') {
     const variance = (Math.random() * 0.6) - 0.3;
-    currentNextInterval = Math.max(500, Math.round(baseBeatInterval * (1 + variance)));
+    currentNextInterval = Math.max(400, Math.round(baseBeatInterval * (1 + variance)));
   } else {
     currentNextInterval = baseBeatInterval;
   }
@@ -489,40 +497,34 @@ function handleTap(side) {
   }
 }
 
-// ── CANVAS TOUCH / DIRECT DOT CLICK HANDLER (FOR IPAD) ──
+// ── IPAD DIRECT DOT TOUCH ENGINE ──
 function handleCanvasPointer(e) {
   if (!isRunning) return;
   e.preventDefault();
 
   const rect = canvas.getBoundingClientRect();
-  const touchX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
-  const touchY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+  const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+  const clientY = e.clientY || (e.touches && e.touches[0].clientY);
 
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
+  const touchX = (clientX - rect.left) * (canvas.width / rect.width);
+  const touchY = (clientY - rect.top) * (canvas.height / rect.height);
 
-  const canvasX = touchX * scaleX;
-  const canvasY = touchY * scaleY;
-
-  // ค้นหาเป้าหมายปัจจุบัน
   const targetDot = (currentSide === 0) ? leftPath[currentStep] : rightPath[currentStep];
-  const touchRadius = 35; // ขยายรัศมีให้แตะง่ายบนหน้าจอ iPad
+  const touchRadius = 38; // ขยายพื้นที่ตรวจจับการแตะสัมผัสสำหรับจุดขนาด 1cm
 
-  const dist = Math.hypot(canvasX - targetDot.x, canvasY - targetDot.y);
+  const dist = Math.hypot(touchX - targetDot.x, touchY - targetDot.y);
 
   if (dist <= touchRadius) {
     handleTap(currentSide);
   } else {
-    // ถ้าแตะฝั่งตรงข้ามหรือจุดอื่น
     const otherSide = currentSide === 0 ? 1 : 0;
     const otherDot = (otherSide === 0) ? leftPath[currentStep] : rightPath[currentStep];
-    const distOther = Math.hypot(canvasX - otherDot.x, canvasY - otherDot.y);
+    const distOther = Math.hypot(touchX - otherDot.x, touchY - otherDot.y);
     
     if (distOther <= touchRadius) {
       handleTap(otherSide);
     } else {
-      // แตะนอกจุดเป้าหมาย ให้ระบุตามซีกฝั่งหน้าจอ (ซ้าย/ขวา)
-      const sideByScreen = canvasX < (canvas.width / 2) ? 0 : 1;
+      const sideByScreen = touchX < (canvas.width / 2) ? 0 : 1;
       handleTap(sideByScreen);
     }
   }
@@ -530,7 +532,6 @@ function handleCanvasPointer(e) {
 
 canvas.addEventListener('pointerdown', handleCanvasPointer);
 
-// ── COGNITIVE TASK ENGINE ──
 function nextQuestion() {
   if (!isRunning) return;
   
@@ -603,20 +604,19 @@ function voiceCheck(isCorrect) {
   nextQuestion();
 }
 
-// ── KEYBOARD CONTROLS ──
 window.addEventListener('keydown', (e) => {
   if (e.code === 'KeyA') handleTap(0);
   if (e.code === 'KeyL') handleTap(1);
   if (e.code === 'Enter') checkMath();
 });
 
-// ── CANVAS RENDER ──
+// ── RENDER ENGINE ──
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (leftPath.length === 0) return;
 
   ctx.strokeStyle = '#1e2d40';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 4;
   
   ctx.beginPath();
   leftPath.forEach((pt, i) => i === 0 ? ctx.moveTo(pt.x, pt.y) : ctx.lineTo(pt.x, pt.y));
@@ -639,26 +639,30 @@ function drawDot(pt, stepIndex, side) {
   const isCurrentTarget = (stepIndex === currentStep && side === currentSide);
   const isPassed = (stepIndex < currentStep) || (stepIndex === currentStep && currentSide === 1 && side === 0);
 
-  ctx.arc(pt.x, pt.y, isCurrentTarget ? 15 : 10, 0, Math.PI * 2);
+  // รัศมีจุดประมาณ 1 cm (19px -> เส้นผ่านศูนย์กลาง 38px / ~1cm บน iPad)
+  const baseRadius = 19;
+  const currentRadius = isCurrentTarget ? 23 : baseRadius;
+
+  ctx.arc(pt.x, pt.y, currentRadius, 0, Math.PI * 2);
 
   if (isCurrentTarget) {
     if (isErrorState) {
       ctx.fillStyle = '#ff6b6b';
       ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 4;
     } else {
       ctx.fillStyle = '#00e5a0';
       ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 4;
     }
   } else if (isPassed) {
     ctx.fillStyle = '#1e2d40';
     ctx.strokeStyle = '#7a9bb0';
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
   } else {
     ctx.fillStyle = '#162030';
     ctx.strokeStyle = '#253344';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2;
   }
 
   ctx.fill();
@@ -666,7 +670,7 @@ function drawDot(pt, stepIndex, side) {
 
   if (isCurrentTarget && isErrorState) {
     ctx.beginPath();
-    ctx.arc(pt.x, pt.y, 22, 0, Math.PI * 2);
+    ctx.arc(pt.x, pt.y, 30, 0, Math.PI * 2);
     ctx.strokeStyle = '#ff6b6b';
     ctx.lineWidth = 3;
     ctx.stroke();
