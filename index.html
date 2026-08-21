@@ -24,7 +24,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
-html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Kanit', sans-serif; overflow: hidden; }
+html, body { height: 100%; width: 100%; background: var(--bg); color: var(--text); font-family: 'Kanit', sans-serif; overflow: hidden; }
 
 body {
   display: flex; flex-direction: column; align-items: center; justify-content: space-between;
@@ -42,7 +42,7 @@ body {
 .ov-line { width: 48px; height: 3px; background: var(--accent); border-radius: 2px; }
 .ov-desc { font-size: 13px; color: var(--text2); text-align: center; max-width: 320px; line-height: 1.5; }
 
-.ov-settings { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.ov-settings { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .ov-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg3); border-radius: 12px; }
 .ov-row label { font-size: 13px; color: var(--text2); }
 .ov-row select, .ov-row input[type="number"] {
@@ -51,64 +51,64 @@ body {
 }
 
 .btn-big {
-  width: 100%; max-width: 320px; padding: 16px; border-radius: var(--r);
+  width: 100%; max-width: 380px; padding: 16px; border-radius: var(--r);
   background: var(--accent); color: #0a1410; font-family: 'Kanit', sans-serif;
   font-size: 18px; font-weight: 700; border: none; cursor: pointer; transition: transform .1s; margin-top: 10px;
 }
 .btn-big:active { transform: scale(0.97); }
 
 #hdr {
-  width: 100%; max-width: 420px; display: flex; align-items: center; padding: 10px 16px;
+  width: 100%; max-width: 900px; display: flex; align-items: center; padding: 10px 16px;
   gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
 }
 .hd-stat { flex: 1; text-align: center; }
-.hd-val { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; line-height: 1; }
-.hd-lbl { font-size: 9px; color: var(--text3); letter-spacing: 0.5px; margin-top: 3px; }
+.hd-val { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; line-height: 1; }
+.hd-lbl { font-size: 10px; color: var(--text3); letter-spacing: 0.5px; margin-top: 3px; }
 .hd-sep { width: 1px; height: 28px; background: rgba(255,255,255,0.07); }
 #btn-menu {
-  width: 36px; height: 36px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
-  background: var(--bg3); color: var(--text2); font-size: 16px; cursor: pointer;
+  width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+  background: var(--bg3); color: var(--text2); font-size: 18px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
 
 #game-layout {
-  flex: 1; width: 100%; max-width: 420px; display: flex; flex-direction: column;
+  flex: 1; width: 100%; max-width: 900px; display: flex; flex-direction: column;
   justify-content: space-between; align-items: center; padding: 8px 12px; gap: 8px; min-height: 0;
 }
 
 #q-card {
   width: 100%; background: var(--bg2); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: var(--r); padding: 10px 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+  border-radius: var(--r); padding: 12px 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
   position: relative; overflow: hidden;
 }
 #q-timer-bar {
   position: absolute; top: 0; left: 0; height: 3px; background: var(--accent); width: 100%; transition: width 0.1s linear;
 }
-#q-badge { font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-#q-text { font-size: 15px; font-weight: 500; color: var(--text); min-height: 46px; display: flex; align-items: center; justify-content: center; white-space: pre-line; }
-#q-text.revealed { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; color: var(--accent); }
+#q-badge { font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+#q-text { font-size: 16px; font-weight: 500; color: var(--text); min-height: 44px; display: flex; align-items: center; justify-content: center; white-space: pre-line; }
+#q-text.revealed { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: var(--accent); }
 
-#ans-row { display: flex; gap: 6px; width: 100%; max-width: 280px; }
+#ans-row { display: flex; gap: 8px; width: 100%; max-width: 320px; }
 #ans-input {
   flex: 1; background: var(--bg3); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
-  color: #fff; font-family: 'Space Mono', monospace; font-size: 16px; text-align: center; outline: none;
+  color: #fff; font-family: 'Space Mono', monospace; font-size: 18px; text-align: center; outline: none;
 }
-.btn-sm { padding: 6px 14px; border-radius: 8px; background: var(--accent); color: #0a1410; font-weight: 700; border: none; cursor: pointer; }
-.btn-voice { flex: 1; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 12px; border: none; cursor: pointer; }
+.btn-sm { padding: 8px 16px; border-radius: 8px; background: var(--accent); color: #0a1410; font-weight: 700; border: none; cursor: pointer; }
+.btn-voice { flex: 1; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 13px; border: none; cursor: pointer; }
 
-#canvas-wrap { flex: 1; width: 100%; display: flex; justify-content: center; align-items: center; min-height: 0; }
-canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r); touch-action: none; cursor: pointer; }
+#canvas-wrap { flex: 1; width: 100%; display: flex; justify-content: center; align-items: center; min-height: 0; position: relative; }
+canvas { width: 100%; height: 100%; background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--r); touch-action: none; cursor: pointer; }
 
-#controls { width: 100%; display: flex; gap: 10px; }
+#controls { width: 100%; display: flex; gap: 12px; }
 .btn-tap {
-  flex: 1; padding: 14px; border-radius: var(--r); border: none; color: #fff;
-  font-family: 'Kanit', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity .1s;
+  flex: 1; padding: 16px; border-radius: var(--r); border: none; color: #fff;
+  font-family: 'Kanit', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity .1s;
 }
 #btn-left { background: #2980b9; }
 #btn-right { background: #8e44ad; }
 .btn-tap:active { opacity: 0.8; }
 
-#fb-bar { font-size: 12px; font-weight: 600; min-height: 18px; color: var(--text2); text-align: center; }
+#fb-bar { font-size: 13px; font-weight: 600; min-height: 18px; color: var(--text2); text-align: center; }
 </style>
 </head>
 <body>
@@ -117,7 +117,7 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
   <div class="ov-icon">🧠⚡</div>
   <div class="ov-title">Multitask Rhythm</div>
   <div class="ov-line"></div>
-  <div class="ov-desc">Tap directly on the dots or buttons strictly on beat while solving cognitive tasks!</div>
+  <div class="ov-desc">Tap directly on the target dots or use buttons strictly on beat while solving cognitive tasks!</div>
 
   <div class="ov-settings">
     <div class="ov-row">
@@ -130,11 +130,12 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
     <div class="ov-row">
       <label>Rhythm Speed (BPM)</label>
       <select id="bpm-sel">
-        <option value="50">50 BPM (Slow)</option>
-        <option value="60" selected>60 BPM (Normal)</option>
-        <option value="75">75 BPM (Medium)</option>
-        <option value="90">90 BPM (Fast)</option>
-        <option value="100">100 BPM (Pro)</option>
+        <option value="30">30 BPM (Very Slow)</option>
+        <option value="40">40 BPM (Slow)</option>
+        <option value="50" selected>50 BPM (Normal)</option>
+        <option value="60">60 BPM (Medium)</option>
+        <option value="70">70 BPM (Fast)</option>
+        <option value="80">80 BPM (Pro)</option>
       </select>
     </div>
     <div class="ov-row">
@@ -183,7 +184,7 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
       <button class="btn-sm" onclick="checkMath()">OK</button>
     </div>
     
-    <div id="ans-voice-row" style="display:none; gap:6px; width:100%; max-width:280px;">
+    <div id="ans-voice-row" style="display:none; gap:8px; width:100%; max-width:320px;">
       <button class="btn-voice" style="background:rgba(0,229,160,0.2); color:var(--accent);" onclick="voiceCheck(true)">✓ Correct</button>
       <button class="btn-voice" style="background:rgba(255,107,107,0.2); color:var(--warn);" onclick="voiceCheck(false)">✗ Missed</button>
     </div>
@@ -192,7 +193,7 @@ canvas { background: var(--bg2); border: 1px solid rgba(255,255,255,0.05); borde
   <div id="fb-bar">Ready</div>
 
   <div id="canvas-wrap">
-    <canvas id="gameCanvas" width="350" height="420"></canvas>
+    <canvas id="gameCanvas"></canvas>
   </div>
 
   <div id="controls">
@@ -210,7 +211,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// ── AUDIO SYSTEM FIX FOR IPAD / IOS ──
+// ── AUDIO SYSTEM ──
 let audioCtx = null;
 
 function initAudio() {
@@ -222,7 +223,6 @@ function initAudio() {
   }
 }
 
-// ปลดล็อก AudioContext ผ่าน Touch ทันทีที่ผู้ใช้แตะหน้าจอ
 function unlockAudio() {
   initAudio();
   if (audioCtx && audioCtx.state === 'running') {
@@ -336,15 +336,15 @@ function generateAnyRandomQuestion() {
 }
 
 // ── GAME STATE ──
-const TOTAL_POINTS = 10;
+const TOTAL_POINTS = 15; // ปรับเพิ่มเป็น 15 จุด
 let isRunning = false;
 let score = 0, steps = 0, misses = 0;
 let leftPath = [], rightPath = [];
 let currentStep = 0, currentSide = 0;
 
 let lastBeatTime = 0;
-let baseBeatInterval = 1000;
-let currentNextInterval = 1000;
+let baseBeatInterval = 1200;
+let currentNextInterval = 1200;
 let rhythmMode = 'fixed';
 let allowedWindow = 1000;
 let beatTimeout = null;
@@ -362,18 +362,35 @@ let isQTextRevealed = false;
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+function resizeCanvas() {
+  const wrap = document.getElementById('canvas-wrap');
+  if (!wrap) return;
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  generateMap();
+}
+window.addEventListener('resize', resizeCanvas);
+
 function generateMap() {
+  if (canvas.width === 0 || canvas.height === 0) return;
   leftPath = []; rightPath = [];
-  const startY = canvas.height - 40;
-  const endY = 40;
+  
+  // เว้นระยะขอบบน-ล่างให้จุดไม่ติดขอบเกินไป
+  const paddingY = 30;
+  const startY = canvas.height - paddingY;
+  const endY = paddingY;
   const stepY = (startY - endY) / (TOTAL_POINTS - 1);
-  const leftBaseX = canvas.width * 0.28;
-  const rightBaseX = canvas.width * 0.72;
+  
+  const leftBaseX = canvas.width * 0.26;
+  const rightBaseX = canvas.width * 0.74;
+  // เพิ่มความกว้างของการสวิงเยื้องซ้าย-ขวา (Amp) ให้ชัดเจนขึ้น
+  const waveAmp = Math.min(canvas.width * 0.14, 75);
 
   for (let i = 0; i < TOTAL_POINTS; i++) {
     const y = startY - (i * stepY);
-    leftPath.push({ x: leftBaseX + Math.sin(i * 0.8) * 20, y: y });
-    rightPath.push({ x: rightBaseX + Math.cos(i * 0.8) * 20, y: y });
+    // ใช้คลื่น Sine/Cosine เพื่อให้จุดสลับเยื้องซ้าย-ขวาอย่างสมดุล ไม่ทับกัน
+    leftPath.push({ x: leftBaseX + Math.sin(i * 1.1) * waveAmp, y: y });
+    rightPath.push({ x: rightBaseX + Math.cos(i * 1.1) * waveAmp, y: y });
   }
 }
 
@@ -385,7 +402,7 @@ function startGame() {
   
   rhythmMode = document.getElementById('pattern-sel').value;
   const bpm = parseInt(document.getElementById('bpm-sel').value);
-  baseBeatInterval = (60 / bpm) * 1000; // แปลง BPM เป็นระยะเวลามิลลิวินาที
+  baseBeatInterval = (60 / bpm) * 1000;
   
   allowedWindow = parseInt(document.getElementById('window-sel').value);
   const qTimeInput = parseInt(document.getElementById('qtime-input').value);
@@ -394,8 +411,8 @@ function startGame() {
   document.getElementById('overlay').style.display = 'none';
   document.getElementById('win-overlay').style.display = 'none';
   
+  resizeCanvas();
   updateStats();
-  generateMap();
   scheduleNextBeat(true);
   nextQuestion();
   requestAnimationFrame(render);
@@ -441,7 +458,7 @@ function scheduleNextBeat(isFirst = false) {
 
   if (rhythmMode === 'random') {
     const variance = (Math.random() * 0.6) - 0.3;
-    currentNextInterval = Math.max(400, Math.round(baseBeatInterval * (1 + variance)));
+    currentNextInterval = Math.max(500, Math.round(baseBeatInterval * (1 + variance)));
   } else {
     currentNextInterval = baseBeatInterval;
   }
@@ -497,7 +514,7 @@ function handleTap(side) {
   }
 }
 
-// ── IPAD DIRECT DOT TOUCH ENGINE ──
+// ── IPAD FULLSCREEN TOUCH ENGINE ──
 function handleCanvasPointer(e) {
   if (!isRunning) return;
   e.preventDefault();
@@ -510,7 +527,9 @@ function handleCanvasPointer(e) {
   const touchY = (clientY - rect.top) * (canvas.height / rect.height);
 
   const targetDot = (currentSide === 0) ? leftPath[currentStep] : rightPath[currentStep];
-  const touchRadius = 38; // ขยายพื้นที่ตรวจจับการแตะสัมผัสสำหรับจุดขนาด 1cm
+  
+  // รัศมีแตะสัมผัส 75px เหมาะสำหรับจุด 15 จุด
+  const touchRadius = 75; 
 
   const dist = Math.hypot(touchX - targetDot.x, touchY - targetDot.y);
 
@@ -615,7 +634,8 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (leftPath.length === 0) return;
 
-  ctx.strokeStyle = '#1e2d40';
+  // วาดเส้นพาธเชื่อมระหว่างจุด
+  ctx.strokeStyle = '#253344';
   ctx.lineWidth = 4;
   
   ctx.beginPath();
@@ -639,7 +659,7 @@ function drawDot(pt, stepIndex, side) {
   const isCurrentTarget = (stepIndex === currentStep && side === currentSide);
   const isPassed = (stepIndex < currentStep) || (stepIndex === currentStep && currentSide === 1 && side === 0);
 
-  // รัศมีจุดประมาณ 1 cm (19px -> เส้นผ่านศูนย์กลาง 38px / ~1cm บน iPad)
+  // ขนาดจุดมาตรฐาน 38px (รัศมี 19px)
   const baseRadius = 19;
   const currentRadius = isCurrentTarget ? 23 : baseRadius;
 
@@ -677,6 +697,7 @@ function drawDot(pt, stepIndex, side) {
   }
 }
 
+setTimeout(resizeCanvas, 100);
 render();
 </script>
 </body>
